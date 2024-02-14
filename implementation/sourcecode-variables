@@ -1,0 +1,38 @@
+#include <math.h>  
+#include <time.h>
+#include <GL/glut.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#ifdef __APPLE__
+    #include "GLUT/glut.h"
+#else
+    #include "GL/glut.h"
+#endif
+
+#define PI 3.141592653589
+//Color variables for scene 1
+GLfloat sky_R = 0.02, sky_G = 0.16, sky_B = 1.0,
+        grass_R = 0.25, grass_G =  0.57, grass_B = 0.09;
+//Color variables for scene 2
+GLfloat sky_r = 30, sky_g = 200, sky_b = 255,
+        grass_r = 127.5, grass_g =  255, grass_b = 76.5;
+//Coordinates & colors for sun of scene 1
+float ballX = -2.0,ballY = 1.0,ballZ = 0.0,
+      colR = 1.0,colG = 1.0,colB = 0.0,
+      sunTransX = 0.0,sunTransY = 0.0,sunTransZ = 0.0,
+      sunSX = 0.4, sunSY = 0.4, sunSZ = 0.4;
+//Coordinates for windmill rotation
+float center_x = -0.7, center_y = -0.5, current_angle = 0.0f, step_angle = 0.9f; 
+static int flag=1;
+//Variables for menu function, keyboard function & mouse function
+int scene_id, menuList, shadow;
+//Variables to load front sheet and end page & render scene
+unsigned int  frontSheet, endSheet;
+int scene2 = 0, view = 0;
+
+//To display text on screen drawtext function is defined
+void drawText(float x, float y, char *s){
+    glRasterPos2f(x, y);
+        for (int i = 0; s[i] != '\0'; i++)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, s[i]);
+}
