@@ -7,6 +7,6 @@ Various options to visualise sunrise sunset scenes along with shadow of a tree a
 This project has used graphic primitives,textures ,and keyboard inputs to improve the interactive experience of the user.
 
 ## Tools and Technology
-Language used: C language
-Toolkit: GLUT Toolkit
+Language used: C language<br>
+Toolkit: GLUT Toolkit<br>
 Editor: Visual Studio Code
