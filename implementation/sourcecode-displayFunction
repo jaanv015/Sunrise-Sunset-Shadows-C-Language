@@ -1,0 +1,221 @@
+//Display functions
+//Scene 1
+void displayScene1() {
+    view = 1;{
+   glClear(GL_COLOR_BUFFER_BIT);
+   glPushMatrix();
+   glScalef(1.0,1.0,1.0);
+   backgroundSunRiseSet();
+   glPushMatrix();
+    mountain();
+   glPopMatrix();
+   glPushMatrix();
+    road();
+   glPopMatrix();
+   glPushMatrix();
+    tree(-1.9, -0.3, 0.7, 0.7);
+    windmill();
+    tree(-0.3, -0.3, 0.7, 0.7);
+    tree(0.7, -0.3, 0.7, 0.7);
+    tree(1.3, -0.3, 0.7, 0.7);
+   glPopMatrix();
+   glPushMatrix();
+    colorChangeSun();
+   glPopMatrix();
+   glFlush();
+   glPushMatrix();
+    compass();
+   glPopMatrix();
+   glPopMatrix();
+   glFlush();
+   glutSwapBuffers();
+   }
+}
+void displayScene2(){
+    view = 5;{
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    backgroundShadows();
+    glPushMatrix();
+    pineTree();
+    glPopMatrix();
+    glPopMatrix();
+    glFlush();
+    }
+}
+//Function to display End sheet
+void displayEndSheet(){
+    view = 6;{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_TEXTURE_2D);
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, endSheet);
+    glBegin(GL_QUADS);
+    glVertex3f(-2, -2, 0);
+    glTexCoord2f(0, 0);
+    glVertex3f(2, -2, 0);
+    glTexCoord2f(0, 1);
+    glVertex3f(2, 2, 0);
+    glTexCoord2f(1, 1);
+    glVertex3f(-2, 2, 0);
+    glTexCoord2f(1, 0);
+    glEnd();
+    glFlush();
+    glDisable(GL_TEXTURE_2D);
+    glutSwapBuffers();
+    }
+} 
+//Function to load End Sheet
+void loadEndSheet(void){
+    glGenTextures(1, &endSheet);
+    glBindTexture(GL_TEXTURE_2D, endSheet);
+    // set the endSheet wrapping/filtering options (on the currently bound endSheet object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the endSheet
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("EndSheet.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }
+    else{
+        printf("Failed to load");
+    }
+    stbi_image_free(data);
+}
+//Menu function to select scenes
+void selectMenu(int n){
+    switch(n){
+        case 1: {scene_id = 1;
+                displayScene1();}
+                break;
+        /*case 2: {scene_id = 2;
+                displayScene2();}
+                break;*/
+        case 3: {scene_id = 3;
+                displayEndSheet();}
+                break;
+        case 4: {exit(0);}
+                break;
+        default:
+                break;
+    }
+    glutPostRedisplay();
+}
+//Create menu function to display morning noon & eve shadows in scene 2
+//Switch cases indicating morning evening n noon function
+void selectSubMenu(int n){
+   switch(n){
+      case 1:  {shadowMorning();}
+               break;
+      case 2:  {shadowNoon();}
+               break;
+      case 3:  {shadowEvening();}
+               break;
+      case 4:  {displayScene2();}
+               break;
+         default: 
+                  break;
+   }
+   glutPostRedisplay();
+}
+//To create and display menu
+void createMenu(){
+   shadow = glutCreateMenu(selectSubMenu);
+   glutAddMenuEntry("MORNING",1);
+   glutAddMenuEntry("NOON",2);
+   glutAddMenuEntry("EVENING",3);
+   glutAddMenuEntry("STOP",4);
+   
+   menuList = glutCreateMenu(selectMenu);
+   glutAddMenuEntry("SCENE 1",1);
+   glutAddSubMenu("SCENE 2",shadow);
+   glutAddMenuEntry("SCENE 3",3);
+   glutAddMenuEntry("EXIT",4);
+
+   glutAttachMenu(GLUT_RIGHT_BUTTON);  //menu appears when right mouse button is clicked
+}
+//Function to display Front sheet
+void displayFrontSheet(){
+    view = 0;{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_TEXTURE_2D);
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, frontSheet);
+    glBegin(GL_QUADS);
+    glVertex3f(-2, -2, 0);
+    glTexCoord2f(0, 0);
+    glVertex3f(2, -2, 0);
+    glTexCoord2f(0, 1);
+    glVertex3f(2, 2, 0);
+    glTexCoord2f(1, 1);
+    glVertex3f(-2, 2, 0);
+    glTexCoord2f(1, 0);
+    glEnd();
+    glFlush();
+    glDisable(GL_TEXTURE_2D);
+    glutSwapBuffers();
+    }
+}
+void renderScene(){
+    if( view == 0){
+        displayFrontSheet();
+    }
+    else if(view == 1){
+        displayScene1();
+    }
+    else if( view == 2){
+        shadowMorning();
+    }
+    else if( view == 3){
+        shadowNoon();
+    }
+    else if( view == 4){
+        shadowEvening();
+    }
+    else if( view == 5){
+        displayScene2();
+    }
+    else if( view == 6){
+        displayEndSheet();
+    }
+    glFlush();
+}
+//Prevents distortion in displaying scene
+void reshape(int w, int h){
+  glViewport(0,0,w,h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-2.0, 2.0, -2.0, 2.0, -10.0, 10.0);
+  glMatrixMode(GL_MODELVIEW);
+}
+//Initialise screen
+void myInit(){
+  glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+}
+//Load image front and end sheets in png form
+void loadFrontSheet(void){
+    glGenTextures(1, &frontSheet);
+    glBindTexture(GL_TEXTURE_2D, frontSheet);
+    // set the frontSheet wrapping/filtering options (on the currently bound frontSheet object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the frontSheet
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("FrontSheet.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }
+    else{
+        printf ("Failed to load ");
+    }
+    stbi_image_free(data);
+}
